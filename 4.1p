@@ -1,0 +1,92 @@
+package sit707_week4;
+
+import org.junit.Assert;
+import org.junit.Test;
+
+/**
+ * Tests functions in LoginForm.
+ * @author Ahsan Habib
+ */
+public class LoginFormTest {
+
+    @Test
+    public void testStudentIdentity() {
+        String studentId = "s222309402";
+        System.out.println("Student ID: " + studentId);
+        Assert.assertNotNull("Student ID =", studentId);
+    }
+
+    @Test
+    public void testStudentName() {
+        String studentName = "Talal Jamil";
+        System.out.println("Student Name: " + studentName);
+        Assert.assertNotNull("Student name =", studentName);
+    }
+
+    @Test
+    public void testFailEmptyUsernameAndEmptyPasswordAndDontCareValCode() {
+        LoginStatus status = LoginForm.login(null, null);
+        Assert.assertFalse("Login should fail when both username and password are empty", status.isLoginSuccess());
+    }
+
+    /*
+     * Write more test functions below.
+     */
+
+    @Test
+    public void testLoginWithEmptyUsernameAndPassword() {
+        LoginStatus status = LoginForm.login(null, null);
+        Assert.assertFalse("Login should fail when both username and password are empty", status.isLoginSuccess());
+        Assert.assertEquals("Error message should indicate empty username", "Empty Username", status.getErrorMsg());
+    }
+
+    @Test
+    public void testLoginWithEmptyUsernameAndWrongPassword() {
+        LoginStatus status = LoginForm.login(null, "rfr");
+        Assert.assertFalse("Login should fail when username is empty", status.isLoginSuccess());
+        Assert.assertEquals("Error message should indicate empty username", "Empty Username", status.getErrorMsg());
+    }
+
+    @Test
+    public void testLoginWithEmptyUsernameAndCorrectPassword() {
+        LoginStatus status = LoginForm.login(null, "ahsan_pass");
+        Assert.assertFalse("Login should fail when username is empty", status.isLoginSuccess());
+        Assert.assertEquals("Error message should indicate empty username", "Empty Username", status.getErrorMsg());
+    }
+
+    @Test
+    public void testLoginWithWrongUsernameAndEmptyPassword() {
+        LoginStatus status = LoginForm.login("rgrg", null);
+        Assert.assertFalse("Login should fail when password is empty", status.isLoginSuccess());
+        Assert.assertEquals("Error message should indicate empty password", "Empty Password", status.getErrorMsg());
+    }
+
+    @Test
+    public void testLoginWithWrongUsernameAndWrongPassword() {
+        LoginStatus status = LoginForm.login("rggrg ", " grgrgr ");
+        Assert.assertFalse("Login should fail when both username and password are wrong", status.isLoginSuccess());
+        Assert.assertEquals("Error message should indicate credential mismatch", "Credential mismatch", status.getErrorMsg());
+    }
+
+    @Test
+    public void testLoginWithWrongUsernameAndCorrectPassword() {
+        LoginStatus status = LoginForm.login("ergeg", "ahsan_pass");
+        Assert.assertFalse("Login should fail when username is wrong", status.isLoginSuccess());
+        Assert.assertEquals("Error message should indicate credential mismatch", "Credential mismatch", status.getErrorMsg());
+    }
+
+    @Test
+    public void testLoginWithCorrectUsernameAndEmptyPassword() {
+        LoginStatus status = LoginForm.login("ahsan", null);
+        Assert.assertFalse("Login should fail when password is empty", status.isLoginSuccess());
+        Assert.assertEquals("Error message should indicate empty password", "Empty Password", status.getErrorMsg());
+    }
+
+    @Test
+    public void testLoginWithCorrectUsernameAndWrongPassword() {
+        LoginStatus status = LoginForm.login("ahsan", "rbdbneb");
+        Assert.assertFalse("Login should fail when password is wrong", status.isLoginSuccess());
+        Assert.assertEquals("Error message should indicate credential mismatch", "Credential mismatch", status.getErrorMsg());
+    }
+
+}
