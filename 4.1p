@@ -88,5 +88,33 @@ public class LoginFormTest {
         Assert.assertFalse("Login should fail when password is wrong", status.isLoginSuccess());
         Assert.assertEquals("Error message should indicate credential mismatch", "Credential mismatch", status.getErrorMsg());
     }
+	
+	@Test
+	public void testFailCorrectUsernameAndCorrectPasswordAndNullValCode()
+    {
+		LoginStatus status = LoginForm.login("ahsan", "ahsan_pass");
+		boolean Code = LoginForm.validateCode(null);
+		Assert.assertTrue( status.isLoginSuccess() == true );
+		Assert.assertTrue( Code == false );
+    }
+	
+	@Test
+    public void testFailCorrectUsernameAndCorrectPasswordAndWrongValCode()
+    {
+		LoginStatus status = LoginForm.login("ahsan", "ahsan_pass");
+		boolean Code = LoginForm.validateCode("abcd");
+		Assert.assertTrue( status.isLoginSuccess() == true );
+		Assert.assertTrue( Code == false );
+    }
+	
+	@Test
+    public void testFailCorrectUsernameAndCorrectPasswordAndCorrectValCode()
+    {
+		LoginStatus status = LoginForm.login("ahsan", "ahsan_pass");
+		boolean Code = LoginForm.validateCode("123456");
+		Assert.assertTrue( status.isLoginSuccess() == true );
+		Assert.assertTrue( Code == true );
+		
+    }
 
 }
