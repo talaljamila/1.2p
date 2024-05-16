@@ -1,0 +1,112 @@
+package sit707_week7;
+
+import org.junit.Assert;
+import org.junit.Test;
+import org.mockito.Mockito;
+
+public class BodyTemperatureMonitorTest {
+
+    @Test
+    public void testStudentIdentity() {
+        String studentId = "s222309402";
+        Assert.assertNotNull("Student ID is null", studentId);
+    }
+
+    @Test
+    public void testStudentName() {
+        String studentName = "Talal Jamil";
+        Assert.assertNotNull("Student name is null", studentName);
+    }
+
+    @Test
+    public void testReadTemperatureNegative() {
+        // Arrange
+        TemperatureSensor temps = Mockito.mock(TemperatureSensor.class);
+        CloudService cloud = Mockito.mock(CloudService.class);
+        NotificationSender notif = Mockito.mock(NotificationSender.class);
+        Mockito.when(temps.readTemperatureValue()).thenReturn((double) -5);
+        BodyTemperatureMonitor body = new BodyTemperatureMonitor(temps, cloud, notif);
+
+        // Act & Assert
+        Assert.assertEquals((double) -5, body.readTemperature(), 0.1);
+    }
+
+    // Additional tests for edge cases and boundary conditions
+
+    @Test
+    public void testReadTemperatureBoundaryLower() {
+        // Arrange
+        TemperatureSensor temps = Mockito.mock(TemperatureSensor.class);
+        CloudService cloud = Mockito.mock(CloudService.class);
+        NotificationSender notif = Mockito.mock(NotificationSender.class);
+        Mockito.when(temps.readTemperatureValue()).thenReturn((double) 34.9);
+        BodyTemperatureMonitor body = new BodyTemperatureMonitor(temps, cloud, notif);
+
+        // Act & Assert
+        Assert.assertEquals((double) 34.9, body.readTemperature(), 0.1);
+    }
+
+    @Test
+    public void testReadTemperatureBoundaryUpper() {
+        // Arrange
+        TemperatureSensor temps = Mockito.mock(TemperatureSensor.class);
+        CloudService cloud = Mockito.mock(CloudService.class);
+        NotificationSender notif = Mockito.mock(NotificationSender.class);
+        Mockito.when(temps.readTemperatureValue()).thenReturn((double) 42.1);
+        BodyTemperatureMonitor body = new BodyTemperatureMonitor(temps, cloud, notif);
+
+        // Act & Assert
+        Assert.assertEquals((double) 42.1, body.readTemperature(), 0.1);
+    }
+
+    @Test
+    public void testReportTemperatureReadingToCloud() {
+        // Arrange
+        TemperatureSensor temps = Mockito.mock(TemperatureSensor.class);
+        CloudService cloud = Mockito.mock(CloudService.class);
+        NotificationSender notif = Mockito.mock(NotificationSender.class);
+        BodyTemperatureMonitor body = new BodyTemperatureMonitor(temps, cloud, notif);
+        TemperatureReading reads = new TemperatureReading();
+
+        // Act
+        body.reportTemperatureReadingToCloud(reads);
+
+        // Assert
+        Mockito.verify(cloud).sendTemperatureToCloud(reads);
+    }
+
+    @Test
+    public void testInquireBodyStatusNormalNotification() {
+        // Arrange
+        TemperatureSensor temps = Mockito.mock(TemperatureSensor.class);
+        CloudService cloud = Mockito.mock(CloudService.class);
+        NotificationSender notif = Mockito.mock(NotificationSender.class);
+        BodyTemperatureMonitor body = new BodyTemperatureMonitor(temps, cloud, notif);
+        Customer cust = body.getFixedCustomer();
+        Mockito.when(cloud.queryCustomerBodyStatus(cust)).thenReturn("NORMAL");
+
+        // Act
+        body.inquireBodyStatus();
+
+        // Assert
+        Mockito.verify(notif).sendEmailNotification(cust, "Thumbs Up!");
+    }
+
+    @Test
+    public void testInquireBodyStatusAbnormalNotification() {
+        // Arrange
+        TemperatureSensor temps = Mockito.mock(TemperatureSensor.class);
+        CloudService cloud = Mockito.mock(CloudService.class);
+        NotificationSender notif = Mockito.mock(NotificationSender.class);
+        BodyTemperatureMonitor humanbody = new BodyTemperatureMonitor(temps, cloud, notif);
+        Customer cust = humanbody.getFixedCustomer();
+        FamilyDoctor doct = humanbody.getFamilyDoctor();
+        Mockito.when(cloud.queryCustomerBodyStatus(cust)).thenReturn("ABNORMAL");
+
+        // Act
+        humanbody.inquireBodyStatus();
+
+        // Assert
+        Mockito.verify(notif).sendEmailNotification(doct, "Emergency!");
+    }
+}
