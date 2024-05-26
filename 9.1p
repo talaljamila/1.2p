@@ -1,0 +1,179 @@
+package web.service;
+
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.Assert;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+
+public class Functest {
+
+    private WebDriver driver;
+    private WebDriverWait wait;
+
+    @Before
+    public void setUp() {
+        String chromeDriverPath = System.getenv("CHROMEDRIVER_PATH");
+        if (chromeDriverPath == null) {
+            chromeDriverPath = "C:\\Users\\talal\\Downloads\\chromedriver-win64\\chromedriver-win64\\chromedriver.exe";
+        }
+        System.setProperty("webdriver.chrome.driver", chromeDriverPath);
+        driver = new ChromeDriver();
+        wait = new WebDriverWait(driver, 10);
+    }
+
+    @After
+    public void tearDown() {
+        if (driver != null) {
+            driver.quit();
+        }
+    }
+
+    @Test
+    public void testLoginSuccess() {
+        driver.navigate().to("http://127.0.0.1:8080/login");
+
+        WebElement ele = wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("username")));
+        ele.clear();
+        ele.sendKeys("ahsan");
+
+        ele = driver.findElement(By.id("passwd"));
+        ele.clear();
+        ele.sendKeys("ahsan_pass");
+
+        ele = driver.findElement(By.id("dob"));
+        ele.clear();
+        ele.sendKeys("01-02-2000");
+
+        ele = driver.findElement(By.cssSelector("[type=submit]"));
+        ele.submit();
+
+        wait.until(ExpectedConditions.urlContains("q1"));
+        String url = driver.getCurrentUrl();
+        Assert.assertTrue("Expected URL to contain 'q1', but got: " + url, url.contains("q1"));
+    }
+
+    @Test
+    public void testLoginFail() {
+        driver.navigate().to("http://127.0.0.1:8080/login");
+
+        WebElement ele = wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("username")));
+        ele.clear();
+        ele.sendKeys("ahsan");
+
+        ele = driver.findElement(By.id("passwd"));
+        ele.clear();
+        ele.sendKeys("ahsan_pass2");
+
+        ele = driver.findElement(By.id("dob"));
+        ele.clear();
+        ele.sendKeys("01-02-2000");
+
+        ele = driver.findElement(By.cssSelector("[type=submit]"));
+        ele.submit();
+
+        wait.until(ExpectedConditions.urlContains("login"));
+        String url = driver.getCurrentUrl();
+        Assert.assertTrue("Expected URL to contain 'login', but got: " + url, url.contains("login"));
+    }
+
+    @Test
+    public void testQ1Success() {
+        driver.navigate().to("http://127.0.0.1:8080/q1");
+
+        WebElement ele = wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("number1")));
+        ele.clear();
+        ele.sendKeys("1");
+
+        ele = driver.findElement(By.id("number2"));
+        ele.clear();
+        ele.sendKeys("2");
+
+        ele = driver.findElement(By.id("result"));
+        ele.clear();
+        ele.sendKeys("3");
+
+        ele = driver.findElement(By.cssSelector("[type=submit]"));
+        ele.submit();
+
+        wait.until(ExpectedConditions.urlContains("q2"));
+        String url = driver.getCurrentUrl();
+        Assert.assertTrue("Expected URL to contain 'q2', but got: " + url, url.contains("q2"));
+    }
+
+    @Test
+    public void testQ2Success() {
+        driver.navigate().to("http://127.0.0.1:8080/q2");
+
+        WebElement ele = wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("number1")));
+        ele.clear();
+        ele.sendKeys("2");
+
+        ele = driver.findElement(By.id("number2"));
+        ele.clear();
+        ele.sendKeys("1");
+
+        ele = driver.findElement(By.id("result"));
+        ele.clear();
+        ele.sendKeys("1");
+
+        ele = driver.findElement(By.cssSelector("[type=submit]"));
+        ele.submit();
+
+        wait.until(ExpectedConditions.urlContains("q3"));
+        String url = driver.getCurrentUrl();
+        Assert.assertTrue("Expected URL to contain 'q3', but got: " + url, url.contains("q3"));
+    }
+
+
+    @Test
+    public void testQ1MissingData() {
+        driver.navigate().to("http://127.0.0.1:8080/q1");
+
+        WebElement ele = wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("number1")));
+        ele.clear();
+
+        ele = driver.findElement(By.id("number2"));
+        ele.clear();
+        ele.sendKeys("2");
+
+        ele = driver.findElement(By.id("result"));
+        ele.clear();
+        ele.sendKeys("4");
+
+        ele = driver.findElement(By.cssSelector("[type=submit]"));
+        ele.submit();
+
+        boolean isTextPresent = wait.until(ExpectedConditions.textToBePresentInElementLocated(By.tagName("body"), "Please provide valid inputs"));
+        Assert.assertTrue("Expected text 'Please provide valid inputs' to be present on the page", isTextPresent);
+    }
+
+    @Test
+    public void testQ2MissingData() {
+        driver.navigate().to("http://127.0.0.1:8080/q2");
+
+        WebElement ele = wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("number1")));
+        ele.clear();
+
+        ele = driver.findElement(By.id("number2"));
+        ele.clear();
+        ele.sendKeys("2");
+
+        ele = driver.findElement(By.id("result"));
+        ele.clear();
+        ele.sendKeys("4");
+
+        ele = driver.findElement(By.cssSelector("[type=submit]"));
+        ele.submit();
+
+        boolean isTextPresent = wait.until(ExpectedConditions.textToBePresentInElementLocated(By.tagName("body"), "Please provide valid inputs"));
+        Assert.assertTrue("Expected text 'Please provide valid inputs' to be present on the page", isTextPresent);
+    }
+
+
+}
