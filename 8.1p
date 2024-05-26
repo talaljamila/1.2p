@@ -1,0 +1,118 @@
+package web.service;
+
+import org.junit.*;
+import org.openqa.selenium.By;
+import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
+
+import static org.junit.Assert.*;
+
+public class LoginServiceTest {
+
+    private WebDriver driver;
+
+    @Before
+    public void setUp() {
+        System.setProperty("webdriver.chrome.driver", "C:\\Users\\talal\\Downloads\\8.1P-resources\\chromedriver-win64");
+        driver = new ChromeDriver();
+        driver.get("file:///C:/Users/talal/Downloads/8.1P-resources/pages/login.html");
+    }
+
+    @After
+    public void tearDown() {
+        if (driver != null) {
+            driver.quit();
+        }
+    }
+
+    private String login(String username, String password, String dob) {
+        try {
+            WebElement ele = driver.findElement(By.id("username"));
+            ele.clear();
+            ele.sendKeys(username);
+
+            ele = driver.findElement(By.id("passwd"));
+            ele.clear();
+            ele.sendKeys(password);
+
+            ele = driver.findElement(By.id("dob"));
+            ele.clear();
+            ele.sendKeys(dob);
+
+            ele = driver.findElement(By.cssSelector("[type=submit]"));
+            ele.click();
+
+            // Assuming login status is displayed on the page
+            WebElement statusElement = driver.findElement(By.id("status"));
+            return statusElement.getText();
+        } catch (NoSuchElementException e) {
+            return "Element not found";
+        }
+    }
+
+    @Test
+    public void testLoginSuccess() {
+        String status = login("talal", "2468", "1996-09-22");
+        assertEquals("Login successful", "success", status);
+    }
+
+    @Test
+    public void testEmptyUsername() {
+        String status = login("", "2468", "1996-09-22");
+        assertEquals("Empty username", "no username", status);
+    }
+
+    @Test
+    public void testEmptyPassword() {
+        String status = login("talal", "", "1996-09-22");
+        assertEquals("Empty password", "no password", status);
+    }
+
+    @Test
+    public void testEmptyDOB() {
+        String status = login("talal", "2468", "");
+        assertEquals("Empty date of birth", "no dob", status);
+    }
+
+    @Test
+    public void testWrongUsername() {
+        String status = login("wrongUsername", "2468", "1996-09-22");
+        assertEquals("Incorrect username", "wrong username", status);
+    }
+
+    @Test
+    public void testWrongPassword() {
+        String status = login("talal", "wrongPassword", "1996-09-22");
+        assertEquals("Incorrect password", "wrong password", status);
+    }
+
+    @Test
+    public void testWrongDOB() {
+        String status = login("talal", "2468", "wrongDOB");
+        assertEquals("Incorrect date of birth", "wrong dob", status);
+    }
+
+    // Additional test cases to improve coverage
+
+    @Test
+    public void testNullName() {
+        assertEquals("Null username", "null username", login(null, "2468", "1996-09-22"));
+    }
+
+    @Test
+    public void testNullPassword() {
+        assertEquals("Null password", "null password", login("talal", null, "1996-09-22"));
+    }
+
+    @Test
+    public void testNullDOB() {
+        assertEquals("Null date of birth", "null dob", login("talal", "2468", null));
+    }
+
+    @Test
+    public void testNonExistentElements() {
+        assertEquals("Non-existent elements", "Element not found", login("username", "password", "dob"));
+    }
+}
