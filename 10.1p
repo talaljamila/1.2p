@@ -1,0 +1,48 @@
+package task_10P.task10;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+import org.junit.Test;
+
+public class TestMsgBox {
+
+    @Test
+    public void testGetFeedbackStatus() {
+        TestingTeam testingTeam = new TestingTeam("Excellent work!", "Please see my comments.");
+        MsgBox msgBox = new MsgBox();
+        msgBox.setTestTeams(testingTeam);
+
+        assertEquals("Excellent work!", msgBox.getFeedbackStatus());
+    }
+
+    @Test	
+    public void testGetMessages() {
+        TestingTeam testingTeam = new TestingTeam("Excellent work!", "Please see my comments.");
+        MsgBox msgBox = new MsgBox();
+        msgBox.setTestTeams(testingTeam);
+
+        assertEquals("Please see my comments.", msgBox.getMessages());
+    }
+
+    @Test
+    public void testGetFeedbackStatusWithoutSettingTestTeams() {
+        MsgBox msgBox = new MsgBox();
+
+        Exception exception = assertThrows(IllegalStateException.class, () -> {
+            msgBox.getFeedbackStatus();
+        });
+
+        assertEquals("TestTeams instance is not set.", exception.getMessage());
+    }
+
+    @Test
+    public void testGetMessagesWithoutSettingTestTeams() {
+        MsgBox msgBox = new MsgBox();
+
+        Exception exception = assertThrows(IllegalStateException.class, () -> {
+            msgBox.getMessages();
+        });
+
+        assertEquals("TestTeams instance is not set.", exception.getMessage());
+    }
+}
